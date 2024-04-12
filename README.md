@@ -10,10 +10,10 @@ Voter Validation: Ensures that only registered and eligible voters can cast vote
 Result Retrieval: Allows fetching the results of a vote to see how many votes each option received.
 
 ## Smart Contract Methods
-createVote: Admin can create a vote specifying its duration, options, and eligible voters.
-addVoter: Admin can add a new voter to an existing vote.
-castVote: Registered voters can cast their vote for a specific option.
-getVoteResults: Retrieve the total counts of votes for each option in a vote.
+* createVote: Admin can create a vote specifying its duration, options, and eligible voters.
+* addVoter: Admin can add a new voter to an existing vote.
+* castVote: Registered voters can cast their vote for a specific option.
+* getVoteResults: Retrieve the total counts of votes for each option in a vote.
 
 ## Important Considerations
 Ensure that the contract is used by Ethereum's gas and timing constraints.
