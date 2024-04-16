@@ -18,8 +18,8 @@ contract VotingSystem {
     }
 
     struct Group {
-    uint groupId;
-    string groupName;
+        uint groupId;
+        string groupName;
     }
 
     struct Vote { //Data about the vote 
@@ -43,29 +43,13 @@ contract VotingSystem {
 
     // ************************************ Global variables ************************************
     address admin; // the owner of the contract
-    Vote vote; // object Vote, save all the information of the vote to be voted in it
+    //Vote vote; // object Vote, save all the information of the vote to be voted in it
     mapping(uint => Vote) public votes; // Mapping of voteID to Vote ---> not sure
-    mapping(uint => uint[]) public votesByGroup; // Mapping of groupID to voteID
-
-
+    // need to swap to votes 
     // ************************************ Constructor ****************************************************
     // initialize the data of the vote that we select to be voted 
-    constructor(string[] memory voting_options, uint voteID, string memory voteName, uint startTime, uint duration, uint groupId){
-        //duration = the time that the vote will be available to be voted
-        //StartTime = the time that the vote will be available to be voted
+    constructor(){
         admin = msg.sender; //the admin is the owner of the contract
-        //initializing the vote data to be voted
-        vote.voteID = voteID;
-        vote.voteName = voteName; 
-        vote.groupId = groupId; // Set the group for the vote
-        //initializing the expiration contract
-        uint startVoteTime = block.timestamp + startTime; //time starting contract
-        vote.startVoteTime = startVoteTime; //time starting contract
-        vote.endVoteTime = startVoteTime + duration; //time ending contract
-        //initializing the data of options
-        for(uint i = 0; i < voting_options.length; i++){
-            vote.options[i] = Option(voting_options[i], 0);
-        }   
     }
 
     //************************************ Functions ****************************************************
@@ -73,19 +57,36 @@ contract VotingSystem {
     //the function should receive as input the address of the new voter
     //function to add the voters to the vote
     //** initialize voters  -- need to fix ASAP
+    // **** need to think what is the consicuenses that only the admin can call this function. how it can couse that new voters will add.
     function addVoter(uint voteID, address voterAddress, uint groupId) public onlyAdmin {
         //Voter memory voter;//creating a voter to be saved after in the data structure where all the voters are saved.
-        require(block.timestamp < vote.endVoteTime, "Voting time has ended.");
+        require(block.timestamp < votes[voteID].endVoteTime, "Voting time has ended.");
         //checking if the data voter has bee initialized by the system
-        require(!votes[voteID].voters[msg.sender].isRegistered, "The voter exist already at the system.");
+        require(votes[voteID].voters[voterAddress].isRegistered, "The voter exist already at the system.");
         //initializing the data of the new voter
-        vote.voters[voterAddress] = Voter({
-        addressVoter: voterAddress,
-        isRegistered: true,
-        hasVoted: false,
-        voteIndex: 0,
-        groupId: groupId // Set the voter's group
+        votes[voteID].voters[voterAddress] = Voter({
+            addressVoter: voterAddress,
+            isRegistered: true,
+            hasVoted: false,
+            voteIndex: 0,
+            groupId: groupId // Set the voter's group
         });
+    }
+
+    //gets array of voters/group ID and create the vote using the votes variable 
+    // Function to create a new vote
+    function createVote(uint voteID, string memory voteName, uint startTime, uint duration, uint groupId, string[] memory voting_options) public onlyAdmin {
+        // Initialize the vote data
+        votes[voteID].voteID = voteID;
+        votes[voteID].voteName = voteName;
+        votes[voteID].startVoteTime = block.timestamp + startTime;
+        votes[voteID].endVoteTime = votes[voteID].startVoteTime + duration;
+        votes[voteID].groupId = groupId;
+        
+        // Initialize the options
+        for(uint i = 0; i < voting_options.length; i++){
+            votes[voteID].options[i] = Option(voting_options[i], 0);
+        }
     }
 
     // 2.getVoteResults - either admin or voter can call this function. 
@@ -94,7 +95,6 @@ contract VotingSystem {
     //return An array of vote counts corresponding to each vote option.
     function getVoteResults(uint voteID, uint optionsCount) public view returns (uint[] memory) {
         uint[] memory voteCounts = new uint[](optionsCount); // Initialize with the actual number of options.
-        
         // Iterate over each option in the vote and fetch its 'countOption'
         for (uint i = 0; i < optionsCount; i++) {
             voteCounts[i] = votes[voteID].options[i].countOption;
@@ -117,6 +117,6 @@ contract VotingSystem {
         votes[voteID].voters[msg.sender].voteIndex = optionIndex;
 
         // Increment the vote count for the chosen option
-        votes[voteID].options[optionIndex].countOption += 1;
-    }
+        votes[voteID].options[optionIndex].countOption += 1;
+    }
 }
