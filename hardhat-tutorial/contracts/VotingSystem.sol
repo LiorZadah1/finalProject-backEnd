@@ -30,6 +30,7 @@ contract VotingSystem {
         mapping(uint => Option) options; //mapping of the vote options -> optionID => Option
         mapping(address => Voter) voters; // add here to ones that can vote
         uint groupId; // Add this to associate the vote with a specific group
+        uint optionsCount;
     }
 
     modifier onlyAdmin{ //Calling specific functions for the admin
@@ -82,6 +83,8 @@ contract VotingSystem {
         votes[voteID].startVoteTime = block.timestamp + startTime;
         votes[voteID].endVoteTime = votes[voteID].startVoteTime + duration;
         votes[voteID].groupId = groupId;
+        votes[voteID].optionsCount = voting_options.length; // Set options count here
+
         
         // Initialize the options
         for(uint i = 0; i < voting_options.length; i++){
@@ -101,6 +104,15 @@ contract VotingSystem {
         }
         return voteCounts;
     }
+
+function getOptionsCount(uint voteID) public view returns (uint) {
+    return votes[voteID].optionsCount; // Add optionsCount to your Vote struct
+}
+
+function getOptionDetails(uint voteID, uint optionIndex) public view returns (string memory optionName, uint countOption) {
+        Option storage option = votes[voteID].options[optionIndex];
+        return (option.optionName, option.countOption);
+}
 
 
     // Function for voters to cast their vote.
