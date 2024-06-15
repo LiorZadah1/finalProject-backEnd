@@ -105,15 +105,36 @@ contract VotingSystem {
         return voteCounts;
     }
 
-function getOptionsCount(uint voteID) public view returns (uint) {
-    return votes[voteID].optionsCount; // Add optionsCount to your Vote struct
-}
+    function getOptionsCount(uint voteID) public view returns (uint) {
+        return votes[voteID].optionsCount; // Add optionsCount to your Vote struct
+    }
 
-function getOptionDetails(uint voteID, uint optionIndex) public view returns (string memory optionName, uint countOption) {
-        Option storage option = votes[voteID].options[optionIndex];
-        return (option.optionName, option.countOption);
-}
+    function getOptionDetails(uint voteID, uint optionIndex) public view returns (string memory optionName, uint countOption) {
+            Option storage option = votes[voteID].options[optionIndex];
+            return (option.optionName, option.countOption);
+    }
 
+    // function getVotesByUserGroup(address user) external view returns (Vote[] memory) {
+    //     uint256 groupId = userGroup[user];
+    //     uint256 count = 0;
+    //     // First count relevant votes
+    //     for (uint256 i = 1; i <= voteCount; i++) {
+    //         if (votes[i].groupId == groupId) {
+    //             count++;
+    //         }
+    //     }
+
+    //     Vote[] memory groupVotes = new Vote[](count);
+    //     uint256 index = 0;
+    //     // Now store relevant votes
+    //     for (uint256 i = 1; i <= voteCount; i++) {
+    //         if (votes[i].groupId == groupId) {
+    //             groupVotes[index] = votes[i];
+    //             index++;
+    //         }
+    //     }
+    //     return groupVotes;
+    // }
 
     // Function for voters to cast their vote.
     // voteIndex - The index of the vote option chosen by the voter.
