@@ -25,17 +25,6 @@ async function main() {
 
   const VotingSystem = await ethers.getContractFactory("VotingSystem");
   const votingSystem = await VotingSystem.deploy();
-  await votingSystem.deployed(); // This line waits for the contract to be deployed
-
-  console.log("VotingSystem deployed to:", votingSystem.address);
-
-  // Load user data
-  const users = JSON.parse(fs.readFileSync('users.json', 'utf8'));
-  // Save deployed contract address to users.json
-  users.forEach(user => {
-    user.contractAddress = votingSystem.address;
-  });
-  fs.writeFileSync('users.json', JSON.stringify(users, null, 2));
 }
 
 main()
